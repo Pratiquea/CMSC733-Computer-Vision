@@ -124,8 +124,9 @@ def TrainOperation(ImgPH, LabelPH, DirNamesTrain, TrainLabels, NumTrainSamples, 
         ###############################################
         # Fill your loss function of choice here!
         ###############################################
-        
-        loss = ...
+        cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=prLogits,
+                                                        labels=prSoftMax)
+        loss = tf.reduce_mean(cross_entropy)
 
     with tf.name_scope('Accuracy'):
         prSoftMaxDecoded = tf.argmax(prSoftMax, axis=1)
@@ -136,7 +137,7 @@ def TrainOperation(ImgPH, LabelPH, DirNamesTrain, TrainLabels, NumTrainSamples, 
     	###############################################
     	# Fill your optimizer of choice here!
     	###############################################
-        Optimizer = ...
+        Optimizer = tf.train.AdamOptimizer(learning_rate=1e-4).minimize(loss)
 
     # Tensorboard
     # Create a summary to monitor loss tensor
@@ -200,7 +201,7 @@ def main():
     Parser.add_argument('--CheckPointPath', default='../Checkpoints/', help='Path to save Checkpoints, Default: ../Checkpoints/')
     Parser.add_argument('--NumEpochs', type=int, default=50, help='Number of Epochs to Train for, Default:50')
     Parser.add_argument('--DivTrain', type=int, default=1, help='Factor to reduce Train data by per epoch, Default:1')
-    Parser.add_argument('--MiniBatchSize', type=int, default=1, help='Size of the MiniBatch to use, Default:1')
+    Parser.add_argument('--MiniBatchSize', type=int, default=128, help='Size of the MiniBatch to use, Default:1')
     Parser.add_argument('--LoadCheckPoint', type=int, default=0, help='Load Model from latest Checkpoint from CheckPointsPath?, Default:0')
     Parser.add_argument('--LogsPath', default='Logs/', help='Path to save Logs for Tensorboard, Default=Logs/')
 

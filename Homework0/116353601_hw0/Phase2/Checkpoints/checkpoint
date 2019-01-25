@@ -1,0 +1,6 @@
+model_checkpoint_path: "23a300model.ckpt"
+all_model_checkpoint_paths: "22model.ckpt"
+all_model_checkpoint_paths: "23a0model.ckpt"
+all_model_checkpoint_paths: "23a100model.ckpt"
+all_model_checkpoint_paths: "23a200model.ckpt"
+all_model_checkpoint_paths: "23a300model.ckpt"

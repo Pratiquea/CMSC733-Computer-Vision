@@ -16,6 +16,12 @@ import numpy as np
 # Don't generate pyc codes
 sys.dont_write_bytecode = True
 
+def new_weights(shape):
+    return tf.Variable(tf.truncated_normal(shape, stddev=0.05))
+def new_biases(length):
+    return tf.Variable(tf.constant(0.05, shape=[length]))
+
+
 def new_conv_layer(input,              # The previous layer.
                    num_input_channels, # Num. channels in prev. layer.
                    filter_size,        # Width and height of each filter.
@@ -27,12 +33,12 @@ def new_conv_layer(input,              # The previous layer.
     shape = [filter_size, filter_size, num_input_channels, num_filters]
 
     # Create new weights aka. filters with the given shape.
-    weights = tf.Variable(tf.truncated_normal(shape, stddev=0.05))
+    weights = new_weights(shape=shape)
 
     # new_weights(shape=shape)
 
     # Create new biases, one for each filter.
-    biases = tf.Variable(tf.constant(0.05, shape=[num_filters]))
+    biases =  new_biases(length=num_filters)
     # biases = new_biases(length=num_filters)
 
     # But e.g. strides=[1, 2, 2, 1] would mean that the filter
@@ -116,7 +122,6 @@ def new_fc_layer(input,          # The previous layer.
         layer = tf.nn.relu(layer)
 
     return layer
-
 def CIFAR10Model(Img, ImageSize, MiniBatchSize):
     """
     Inputs: 
@@ -134,15 +139,16 @@ def CIFAR10Model(Img, ImageSize, MiniBatchSize):
 
     #Convolution layer 1
     filter_size1 = 5;      #filter size for first convolution layer(i.e. 5x5 pixels)
-    num_filters1 = 16;     #number of filters in first convolution layer
+    num_filters1 = 64;     #number of filters in first convolution layer
 
     #Convolution layer 2
     filter_size2 = 5;      #filter size for second convolution layer(i.e. 5x5 pixels)
-    num_filters2 = 36;     #number of filters in second convolution layer
+    num_filters2 = 64;     #number of filters in second convolution layer
 
     # Fully-connected layer.
-    fc_size = 128             # Number of neurons in fully-connected layer.
-
+    fc1_size = 256             # Number of neurons in fully-connected layer.
+    fc2_size = 128             # Number of neurons in fully-connected layer.
+    num_classes = 10
     ###########################
     ###### flow of code #######
     ###########################
@@ -155,7 +161,7 @@ def CIFAR10Model(Img, ImageSize, MiniBatchSize):
     #Constructing fist convolution layer
     layer_conv1, weights_conv1 = \
     new_conv_layer(input=Img,
-                   num_input_channels=ImageSize[3],
+                   num_input_channels=ImageSize[2],
                    filter_size=filter_size1,
                    num_filters=num_filters1,
                    use_pooling=True)
@@ -172,18 +178,26 @@ def CIFAR10Model(Img, ImageSize, MiniBatchSize):
     #Contruct 1st Fully-connected layer
     layer_fc1 = new_fc_layer(input=layer_flat,
                          num_inputs=num_features,
-                         num_outputs=fc_size,
+                         num_outputs=fc1_size,
                          use_relu=True)
+
 
     #Contruct 2nd Fully-connected layer
     layer_fc2 = new_fc_layer(input=layer_fc1,
-                         num_inputs=fc_size,
+                         num_inputs=fc1_size,
+                         num_outputs=fc2_size,
+                         use_relu=True)
+
+    #Contruct 3rd Fully-connected layer
+    layer_fc3 = new_fc_layer(input=layer_fc2,
+                         num_inputs=fc2_size,
                          num_outputs=num_classes,
                          use_relu=False)
     #normalized probalities of logits
+    prLogits = layer_fc2
+    
     prSoftMax = tf.nn.softmax(layer_fc2)
 
-    prLogits = layer_fc2
 
     return prLogits, prSoftMax
 
