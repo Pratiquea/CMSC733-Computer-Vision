@@ -194,9 +194,9 @@ def CIFAR10Model(Img, ImageSize, MiniBatchSize):
                          num_outputs=num_classes,
                          use_relu=False)
     #normalized probalities of logits
-    prLogits = layer_fc2
+    prLogits = layer_fc3
     
-    prSoftMax = tf.nn.softmax(layer_fc2)
+    prSoftMax = tf.nn.softmax(layer_fc3)
 
 
     return prLogits, prSoftMax

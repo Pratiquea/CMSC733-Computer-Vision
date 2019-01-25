@@ -1,1 +1,9 @@
-/home/pratique/Downloads/cmsc733/Homework0/116353601_hw0/Phase2/CIFAR10
+__pycache__
+*.py[cod]
+*$py.clash
+*.o
+*.so
+*.so.dSYM
+*.pratique
+./Homework0/116353601_hw0/Phase2/Checkpoints/
+./Homework0/116353601_hw0/Phase2/CIFAR10/

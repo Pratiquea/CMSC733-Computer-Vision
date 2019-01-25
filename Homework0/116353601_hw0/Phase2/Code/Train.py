@@ -125,7 +125,7 @@ def TrainOperation(ImgPH, LabelPH, DirNamesTrain, TrainLabels, NumTrainSamples, 
         # Fill your loss function of choice here!
         ###############################################
         cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=prLogits,
-                                                        labels=prSoftMax)
+                                                        labels=LabelPH)
         loss = tf.reduce_mean(cross_entropy)
 
     with tf.name_scope('Accuracy'):
