@@ -57,6 +57,9 @@ def SetupAll(BasePath):
     SkipFactor = 1
     for count in range(1,NumImages+1,SkipFactor):
         DataPath.append(BasePath + str(count) + '.png')
+        # print('\n')
+        # print('datapath in setup = ', DataPath)
+        # print('\n')
 
     return ImageSize, DataPath
     
@@ -104,7 +107,9 @@ def TestOperation(ImgPH, ImageSize, ModelPath, DataPath, LabelsPathPred):
     Length = ImageSize[0]
     # Predict output with forward pass, MiniBatchSize for Test is 1
     _, prSoftMaxS = CIFAR10Model(ImgPH, ImageSize, 1)
-
+    # print('\n')
+    # print('prSoftMaxS'+"\n", prSoftMaxS)
+    # print('\n')
     # Setup Saver
     Saver = tf.train.Saver()
 
@@ -114,7 +119,9 @@ def TestOperation(ImgPH, ImageSize, ModelPath, DataPath, LabelsPathPred):
         print('Number of parameters in this model are %d ' % np.sum([np.prod(v.get_shape().as_list()) for v in tf.trainable_variables()]))
         
         OutSaveT = open(LabelsPathPred, 'w')
-
+        # print('\n')
+        # print('SIZE OF DATA PATH = ',np.size(DataPath))
+        # print('\n')
         for count in tqdm(range(np.size(DataPath))):            
             DataPathNow = DataPath[count]
             Img, ImgOrg = ReadImages(ImageSize, DataPathNow)
@@ -123,6 +130,9 @@ def TestOperation(ImgPH, ImageSize, ModelPath, DataPath, LabelsPathPred):
 
             OutSaveT.write(str(PredT)+'\n')
             
+         
+        # print('Trainoperation loop ended')
+        # print('\n')
         OutSaveT.close()
 
 def Accuracy(Pred, GT):
@@ -159,10 +169,10 @@ def ConfusionMatrix(LabelsTrue, LabelsPred):
     LabelsTrue - True labels
     LabelsPred - Predicted labels
     """
-
+    print('length = '+ str(len(LabelsPred)))
     # Get the confusion matrix using sklearn.
-    cm = confusion_matrix(y_true=LabelTest,  # True class for test-set.
-                          y_pred=LabelPred)  # Predicted class.
+    cm = confusion_matrix(y_true=LabelsTrue,  # True class for test-set.
+                          y_pred=LabelsPred)  # Predicted class.
 
     # Print the confusion matrix as text.
     for i in range(10):
@@ -172,7 +182,7 @@ def ConfusionMatrix(LabelsTrue, LabelsPred):
     class_numbers = [" ({0})".format(i) for i in range(10)]
     print("".join(class_numbers))
 
-    print('Accuracy: '+ str(Accuracy(LabelPred, LabelTest)), '%')
+    print('Accuracy: ' + str(Accuracy(LabelsPred, LabelsTrue)), '%')
 
         
 def main():
@@ -185,8 +195,8 @@ def main():
 
     # Parse Command Line arguments
     Parser = argparse.ArgumentParser()
-    Parser.add_argument('--ModelPath', dest='ModelPath', default='/home/chahatdeep/Downloads/Checkpoints/144model.ckpt', help='Path to load latest model from, Default:ModelPath')
-    Parser.add_argument('--BasePath', dest='BasePath', default='/home/chahatdeep/Downloads/aa/CMSC733HW0/CIFAR10/Test/', help='Path to load images from, Default:BasePath')
+    Parser.add_argument('--ModelPath', dest='ModelPath', default='/home/pratique/Downloads/cmsc733/Homework0/116353601_hw0/Phase2/Checkpoints/9model.ckpt', help='Path to load latest model from, Default:ModelPath')
+    Parser.add_argument('--BasePath', dest='BasePath', default='/home/pratique/Downloads/cmsc733/Homework0/116353601_hw0/Phase2/CIFAR10/Test/', help='Path to load images from, Default:BasePath')
     Parser.add_argument('--LabelsPath', dest='LabelsPath', default='./TxtFiles/LabelsTest.txt', help='Path of labels file, Default:./TxtFiles/LabelsTest.txt')
     Args = Parser.parse_args()
     ModelPath = Args.ModelPath
@@ -201,7 +211,9 @@ def main():
     LabelsPathPred = './TxtFiles/PredOut.txt' # Path to save predicted labels
 
     TestOperation(ImgPH, ImageSize, ModelPath, DataPath, LabelsPathPred)
-
+    # print('\n')
+    # print('TestOperation ended')
+    # print('\n')
     # Plot Confusion Matrix
     LabelsTrue, LabelsPred = ReadLabels(LabelsPath, LabelsPathPred)
     ConfusionMatrix(LabelsTrue, LabelsPred)

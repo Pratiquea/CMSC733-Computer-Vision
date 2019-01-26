@@ -22,7 +22,7 @@ import cv2
 import sys
 import os
 import glob
-# import Misc.ImageUtils as iu
+import Misc.ImageUtils as iu
 import random
 from skimage import data, exposure, img_as_float
 import matplotlib.pyplot as plt
@@ -67,16 +67,16 @@ def GenerateBatch(BasePath, DirNamesTrain, TrainLabels, ImageSize, MiniBatchSize
         
         RandImageName = BasePath + os.sep + DirNamesTrain[RandIdx] + '.png'   
         ImageNum += 1
-    	
-    	##########################################################
-    	# Add any standardization or data augmentation here!
-    	##########################################################
-
         I1 = np.float32(cv2.imread(RandImageName))
+        ##########################################################################
+        # Add any standardization or cropping/resizing if used in Training here!
+        ##########################################################################
+        I1S=(I1-np.mean(I1))/255
         Label = convertToOneHot(TrainLabels[RandIdx], 10)
 
         # Append All Images and Mask
-        I1Batch.append(I1)
+        I1Batch.append(I1S)
+        # I1Batch.append(I1)
         LabelBatch.append(Label)
         
     return I1Batch, LabelBatch
@@ -137,7 +137,7 @@ def TrainOperation(ImgPH, LabelPH, DirNamesTrain, TrainLabels, NumTrainSamples, 
     	###############################################
     	# Fill your optimizer of choice here!
     	###############################################
-        Optimizer = tf.train.AdamOptimizer(learning_rate=1e-4).minimize(loss)
+        Optimizer = tf.train.AdamOptimizer(learning_rate=1e-3).minimize(loss)
 
     # Tensorboard
     # Create a summary to monitor loss tensor
@@ -155,6 +155,7 @@ def TrainOperation(ImgPH, LabelPH, DirNamesTrain, TrainLabels, NumTrainSamples, 
             # Extract only numbers from the name
             StartEpoch = int(''.join(c for c in LatestFile.split('a')[0] if c.isdigit()))
             print('Loaded latest checkpoint with the name ' + LatestFile + '....')
+            print('Number of parameters in this model are %d ' % np.sum([np.prod(v.get_shape().as_list()) for v in tf.trainable_variables()]))
         else:
             sess.run(tf.global_variables_initializer())
             StartEpoch = 0
@@ -199,9 +200,9 @@ def main():
     Parser = argparse.ArgumentParser()
     Parser.add_argument('--BasePath', default='/home/pratique/Downloads/cmsc733/Homework0/116353601_hw0/Phase2/CIFAR10', help='Base path of images, Default:/home/pratique/Downloads/cmsc733/Homework0/116353601_hw0/Phase2/CIFAR10')
     Parser.add_argument('--CheckPointPath', default='../Checkpoints/', help='Path to save Checkpoints, Default: ../Checkpoints/')
-    Parser.add_argument('--NumEpochs', type=int, default=50, help='Number of Epochs to Train for, Default:50')
+    Parser.add_argument('--NumEpochs', type=int, default=10, help='Number of Epochs to Train for, Default:50')
     Parser.add_argument('--DivTrain', type=int, default=1, help='Factor to reduce Train data by per epoch, Default:1')
-    Parser.add_argument('--MiniBatchSize', type=int, default=128, help='Size of the MiniBatch to use, Default:1')
+    Parser.add_argument('--MiniBatchSize', type=int, default=256, help='Size of the MiniBatch to use, Default:1')
     Parser.add_argument('--LoadCheckPoint', type=int, default=0, help='Load Model from latest Checkpoint from CheckPointsPath?, Default:0')
     Parser.add_argument('--LogsPath', default='Logs/', help='Path to save Logs for Tensorboard, Default=Logs/')
 
