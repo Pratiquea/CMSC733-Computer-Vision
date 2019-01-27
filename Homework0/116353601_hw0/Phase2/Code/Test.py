@@ -26,7 +26,7 @@ import Misc.ImageUtils as iu
 import random
 from skimage import data, exposure, img_as_float
 import matplotlib.pyplot as plt
-from Network.Network import CIFAR10Model
+from Network.Network import CIFAR10Model, SIMPLE_NET, MY_RESNET
 from Misc.MiscUtils import *
 import numpy as np
 import time
@@ -106,7 +106,8 @@ def TestOperation(ImgPH, ImageSize, ModelPath, DataPath, LabelsPathPred):
     """
     Length = ImageSize[0]
     # Predict output with forward pass, MiniBatchSize for Test is 1
-    _, prSoftMaxS = CIFAR10Model(ImgPH, ImageSize, 1)
+    # _, prSoftMaxS = CIFAR10Model(ImgPH, ImageSize, 1)
+    _, prSoftMaxS = MY_RESNET(ImgPH, ImageSize, 1)
     # print('\n')
     # print('prSoftMaxS'+"\n", prSoftMaxS)
     # print('\n')
@@ -195,7 +196,7 @@ def main():
 
     # Parse Command Line arguments
     Parser = argparse.ArgumentParser()
-    Parser.add_argument('--ModelPath', dest='ModelPath', default='/home/pratique/Downloads/cmsc733/Homework0/116353601_hw0/Phase2/Checkpoints/9model.ckpt', help='Path to load latest model from, Default:ModelPath')
+    Parser.add_argument('--ModelPath', dest='ModelPath', default='/home/pratique/Downloads/cmsc733/Homework0/116353601_hw0/Phase2/Checkpoints/24model.ckpt', help='Path to load latest model from, Default:ModelPath')
     Parser.add_argument('--BasePath', dest='BasePath', default='/home/pratique/Downloads/cmsc733/Homework0/116353601_hw0/Phase2/CIFAR10/Test/', help='Path to load images from, Default:BasePath')
     Parser.add_argument('--LabelsPath', dest='LabelsPath', default='./TxtFiles/LabelsTest.txt', help='Path of labels file, Default:./TxtFiles/LabelsTest.txt')
     Args = Parser.parse_args()

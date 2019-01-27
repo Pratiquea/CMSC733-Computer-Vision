@@ -8,6 +8,10 @@ Author(s):
 Nitin J. Sanket (nitinsan@terpmail.umd.edu)
 PhD Candidate in Computer Science,
 University of Maryland, College Park
+
+Prateek Arora(pratique@terpmail.umd.edu)
+Robotics Graduate Student
+University of Maryland, College Park
 """
 
 import tensorflow as tf
@@ -16,112 +20,6 @@ import numpy as np
 # Don't generate pyc codes
 sys.dont_write_bytecode = True
 
-# def new_weights(shape):
-#     return tf.Variable(tf.truncated_normal(shape, stddev=0.05))
-# def new_biases(length):
-#     return tf.Variable(tf.constant(0.05, shape=[length]))
-
-
-# def new_conv_layer(input,              # The previous layer.
-#                    num_input_channels, # Num. channels in prev. layer.
-#                    filter_size,        # Width and height of each filter.
-#                    num_filters,        # Number of filters.
-#                    use_pooling=True):  # Use 2x2 max-pooling.
-
-#     # Shape of the filter-weights for the convolution.
-#     # This format is determined by the TensorFlow API.
-#     shape = [filter_size, filter_size, num_input_channels, num_filters]
-
-#     # Create new weights aka. filters with the given shape.
-#     weights = new_weights(shape=shape)
-
-#     # new_weights(shape=shape)
-
-#     # Create new biases, one for each filter.
-#     biases =  new_biases(length=num_filters)
-#     # biases = new_biases(length=num_filters)
-
-#     # But e.g. strides=[1, 2, 2, 1] would mean that the filter
-#     # is moved 2 pixels across the x- and y-axis of the image.
-#     # The padding is set to 'SAME' which means the input image
-#     # is padded with zeroes so the size of the output is the same.
-#     layer = tf.nn.conv2d(input=input,
-#                          filter=weights,
-#                          strides=[1, 1, 1, 1],
-#                          padding='SAME')
-
-#     # Add the biases to the results of the convolution.
-#     # A bias-value is added to each filter-channel.
-#     layer += biases
-
-#     # Use pooling to down-sample the image resolution?
-#     if use_pooling:
-#         # This is 2x2 max-pooling, which means that we
-#         # consider 2x2 windows and select the largest value
-#         # in each window. Then we move 2 pixels to the next window.
-#         layer = tf.nn.max_pool(value=layer,
-#                                ksize=[1, 2, 2, 1],
-#                                strides=[1, 2, 2, 1],
-#                                padding='SAME')
-
-#     # Rectified Linear Unit (ReLU).
-#     # It calculates max(x, 0) for each input pixel x.
-#     # This adds some non-linearity to the formula and allows us
-#     # to learn more complicated functions.
-#     layer = tf.nn.relu(layer)
-
-#     # Note that ReLU is normally executed before the pooling,
-#     # but since relu(max_pool(x)) == max_pool(relu(x)) we can
-#     # save 75% of the relu-operations by max-pooling first.
-
-#     # We return both the resulting layer and the filter-weights
-#     # because we will plot the weights later.
-#     return layer, weights
-
-# # A function to convert the ouput of 2nd convolution layer to proper input for 1st neural layer 
-# def flatten_layer(layer):
-#     # Get the shape of the input layer.
-#     layer_shape = layer.get_shape()
-
-#     # The shape of the input layer is assumed to be:
-#     # layer_shape == [num_images, img_height, img_width, num_channels]
-
-#     # The number of features is: img_height * img_width * num_channels
-#     # We can use a function from TensorFlow to calculate this.
-#     num_features = layer_shape[1:4].num_elements()
-    
-#     # Reshape the layer to [num_images, num_features].
-#     # Note that we just set the size of the second dimension
-#     # to num_features and the size of the first dimension to -1
-#     # which means the size in that dimension is calculated
-#     # so the total size of the tensor is unchanged from the reshaping.
-#     layer_flat = tf.reshape(layer, [-1, num_features])
-
-#     # The shape of the flattened layer is now:
-#     # [num_images, img_height * img_width * num_channels]
-
-#     # Return both the flattened layer and the number of features.
-#     return layer_flat, num_features
-
-
-# def new_fc_layer(input,          # The previous layer.
-#                  num_inputs,     # Num. inputs from prev. layer.
-#                  num_outputs,    # Num. outputs.
-#                  use_relu=True): # Use Rectified Linear Unit (ReLU)?
-
-#     # Create new weights and biases.
-#     weights = new_weights(shape=[num_inputs, num_outputs])
-#     biases = new_biases(length=num_outputs)
-
-#     # Calculate the layer as the matrix multiplication of
-#     # the input and weights, and then add the bias-values.
-#     layer = tf.matmul(input, weights) + biases
-
-#     # Use ReLU?
-#     if use_relu:
-#         layer = tf.nn.relu(layer)
-
-#     return layer
 
 def CIFAR10Model(Img, ImageSize, MiniBatchSize):
     """
@@ -146,60 +44,21 @@ def CIFAR10Model(Img, ImageSize, MiniBatchSize):
     #############################
     # Fill your network here!
     #############################
-    # x_image = tf.reshape(Img, [-1, ImageSize[0], ImageSize[1], ImageSize[3]])
-
+    
     #Convolution layer 1
     filter_size1 = 3      #filter size for first convolution layer(i.e. 5x5 pixels)
     num_filters1 = 8     #number of filters in first convolution layer
 
-    # print()
-
-    # #Convolution layer 2
+    #Convolution layer 2
     filter_size2 = 3      #filter size for second convolution layer(i.e. 5x5 pixels)
     num_filters2 = 128     #number of filters in second convolution layer
 
-    # # Fully-connected layer.
-    fc1_size = 128             # Number of neurons in fully-connected layer.
+    # Fully-connected layer.
+    fc1_size = 256             # Number of neurons in fully-connected layer.
     fc2_size = 128             # Number of neurons in fully-connected layer.
     num_classes = 10
 
-    # #Constructing fist convolution layer
-    # layer_conv1, weights_conv1 = \
-    # new_conv_layer(input=Img,
-    #                num_input_channels=ImageSize[2],
-    #                filter_size=filter_size1,
-    #                num_filters=num_filters1,
-    #                use_pooling=True)
-
-    # layer_conv2, weights_conv2 = \
-    # new_conv_layer(input=layer_conv1,
-    #                num_input_channels=num_filters1,
-    #                filter_size=filter_size2,
-    #                num_filters=num_filters2,
-    #                use_pooling=True)
-
-    # layer_flat, num_features = flatten_layer(layer_conv2)
-
-    # #Contruct 1st Fully-connected layer
-    # layer_fc1 = new_fc_layer(input=layer_flat,
-    #                      num_inputs=num_features,
-    #                      num_outputs=fc1_size,
-    #                      use_relu=True)
-
-
-    # #Contruct 2nd Fully-connected layer
-    # layer_fc2 = new_fc_layer(input=layer_fc1,
-    #                      num_inputs=fc1_size,
-    #                      num_outputs=fc2_size,
-    #                      use_relu=True)
-
-    # #Contruct 3rd Fully-connected layer
-    # layer_fc3 = new_fc_layer(input=layer_fc2,
-    #                      num_inputs=fc2_size,
-    #                      num_outputs=num_classes,
-    #                      use_relu=False)
-    # #normalized probalities of logits
-    
+        
     net = Img
     #Constructing first convolution layer
     net = tf.layers.conv2d(inputs=net, name='layer_conv1', padding='same',
@@ -217,6 +76,185 @@ def CIFAR10Model(Img, ImageSize, MiniBatchSize):
     net = tf.layers.dense(inputs=net, name='layer_fc1',
                       units=fc1_size, activation=tf.nn.relu)
     #Contruct 2nd Fully-connected layer
+    net = tf.layers.dense(inputs=net, name='layer_fc_out',
+                      units=num_classes, activation=None)
+
+    prLogits = net
+    
+    prSoftMax = tf.nn.softmax(net)
+
+
+    return prLogits, prSoftMax
+
+
+def conv_layer_with_relu(net, num_filters = None, kernel_size = None, strides = None):
+    net = tf.layers.conv2d(inputs=net, padding='same', filters=num_filters, kernel_size=kernel_size, activation=None, strides = strides)
+    net = tf.layers.batch_normalization(net)
+    net = tf.nn.relu(net)
+
+    return net
+
+def conv_layer_without_relu(net, num_filters = None, kernel_size = None, strides = None):
+    net = tf.layers.conv2d(inputs=net, padding='same', filters=num_filters, kernel_size=kernel_size, activation=None, strides = strides)
+    net = tf.layers.batch_normalization(net)
+
+    return net
+
+def create_single_resnet_block(net, num_filters = None, kernel_size = None, prev_filter = None, downsample = False):
+    if(prev_filter == num_filters):
+        original_block = net
+    else:
+        original_block = conv_layer_without_relu(net, num_filters=num_filters, kernel_size=kernel_size, strides=1)
+
+    if downsample:
+        original_block = conv_layer_without_relu(net, num_filters=num_filters, kernel_size=kernel_size, strides=2)
+        net = conv_layer_with_relu(net, num_filters=num_filters, kernel_size=kernel_size, strides=2)
+    else:
+        # original_block = conv_layer_with_relu(original_block, num_filters=num_filters, kernel_size=kernel_size, strides=1)
+        net = conv_layer_with_relu(net, num_filters=num_filters, kernel_size=kernel_size, strides=1)
+
+    net = conv_layer_without_relu(net, num_filters=num_filters, kernel_size=kernel_size, strides=1)
+
+    net = tf.math.add(net, original_block)
+
+    net = tf.nn.relu(net)
+
+    return net
+
+def n_resnet_blocks(num_blocks, net, prev_filter = None, num_filters = None, kernel_size = None, downsample = False):
+
+    if downsample:
+        net = create_single_resnet_block(net, num_filters = num_filters, kernel_size = kernel_size, prev_filter = prev_filter, downsample = True)
+        for i in range(num_blocks-1):
+            net = create_single_resnet_block(net, num_filters = num_filters, prev_filter = prev_filter, kernel_size = kernel_size)
+    else:
+        for i in range(num_blocks):
+            net = create_single_resnet_block(net, num_filters = num_filters, prev_filter = prev_filter, kernel_size = kernel_size)
+    return net
+
+def MY_RESNET(Img, ImageSize, MiniBatchSize):
+    num_classes = 10;
+
+    net = Img
+    net = conv_layer_with_relu(net=net, num_filters = 64, kernel_size = 3, strides = 1)
+    net = n_resnet_blocks(2, net=net, prev_filter = 64, num_filters = 64, kernel_size = 3)
+    net = n_resnet_blocks(2, net=net, prev_filter = 64, num_filters = 128, kernel_size = 3, downsample = True)
+    net = n_resnet_blocks(3, net=net, prev_filter = 128, num_filters = 256, kernel_size = 3, downsample = True)
+
+    net1 = tf.contrib.layers.flatten(net)
+
+    net2 = tf.layers.dense(inputs=net1, name='layer_fc1',
+                      units=128, activation=tf.nn.relu)
+    #Contruct 2nd Fully-connected layer
+    net3 = tf.layers.dense(inputs=net2, name='layer_fc_out',
+                      units=num_classes, activation=None)
+
+    prLogits = net3
+    prSoftMax = tf.nn.softmax(net3)
+    return prLogits, prSoftMax
+
+
+
+def SIMPLE_NET(Img, ImageSize, MiniBatchSize):
+    """
+    Inputs: 
+    Img is a MiniBatch of the current image
+    ImageSize - Size of the Image
+    Outputs:
+    prLogits - logits output of the network
+    prSoftMax - softmax output of the network
+    """
+    
+    # ###########################
+    # ###### flow of code #######
+    # ###########################
+    # #   -- Construct 1st convolution layer
+    # #   -- Construct 2nd convolution layer
+    # #   -- flaten the ouput of 2nd layer to proper input format of 1st Fully-connected layer 
+    # #   -- Contruct 1st Fully-connected layer
+    # #   -- Contruct 2nd Fully-connected layer
+
+
+    #############################
+    # Fill your network here!
+    #############################
+    
+    #Convolution layer 1
+    filter_size1 = 5      #filter size for first convolution layer(i.e. 5x5 pixels)
+    num_filters1 = 32     #number of filters in first convolution layer
+
+    #Convolution layer 2
+    filter_size2 = 5      #filter size for second convolution layer(i.e. 5x5 pixels)
+    num_filters2 = 64     #number of filters in second convolution layer
+
+    #Convolution layer 3
+    filter_size3 = 5      
+    num_filters3 = 64     
+
+    #Convolution layer 4
+    filter_size4 = 5     
+    num_filters4 = 128   
+
+
+    # Fully-connected layer.
+    fc1_size = 256             # Number of neurons in fully-connected layer.
+    fc2_size = 128             # Number of neurons in fully-connected layer.
+    num_classes = 10
+
+        
+    net = Img
+    
+    ### 1
+    net = tf.layers.conv2d(inputs=net, name='layer_conv1', padding='same',
+                       filters=num_filters1, kernel_size=filter_size1, activation=None)
+    net = tf.layers.batch_normalization(net, name='bn1T')
+    net = tf.nn.relu(net, name='relu1T')
+    
+    # net = tf.layers.max_pooling2d(inputs=net, pool_size=2, strides=2)
+    
+
+    ### 2
+    net = tf.layers.conv2d(inputs=net, name='layer_conv2', padding='same',
+                       filters=num_filters2, kernel_size=filter_size2, activation=None)
+    net = tf.layers.batch_normalization(net, name='bn2T')
+    net = tf.nn.relu(net, name='relu2T')
+    
+    net = tf.layers.max_pooling2d(inputs=net, pool_size=2, strides=2)
+    
+
+    ### 3
+    net = tf.layers.conv2d(inputs=net, name='layer_conv3', padding='same',
+                       filters=num_filters3, kernel_size=filter_size3, activation=None)
+    net = tf.layers.batch_normalization(net, name='bn3T')
+    net = tf.nn.relu(net, name='relu3T')
+    
+    # net = tf.layers.max_pooling2d(inputs=net, pool_size=2, strides=2)
+
+
+    ### 4
+    net = tf.layers.conv2d(inputs=net, name='layer_conv4', padding='same',
+                       filters=num_filters4, kernel_size=filter_size4, activation=None)
+    net = tf.layers.batch_normalization(net, name='bn4T')
+    net = tf.nn.relu(net, name='relu4T')
+    
+    net = tf.layers.max_pooling2d(inputs=net, pool_size=2, strides=2)
+
+
+    #flattening layer
+    net = tf.contrib.layers.flatten(net)
+    
+
+
+    #Contruct 1st Fully-connected layer
+    net = tf.layers.dense(inputs=net, name='layer_fc1',
+                      units=fc1_size, activation=tf.nn.relu)
+    #2
+    net = tf.layers.dense(inputs=net, name='layer_fc2',
+                      units=fc2_size, activation=tf.nn.relu)
+    #3
+    net = tf.layers.dense(inputs=net, name='layer_fc3',
+                      units=64, activation=tf.nn.relu)
+    #4
     net = tf.layers.dense(inputs=net, name='layer_fc_out',
                       units=num_classes, activation=None)
 
