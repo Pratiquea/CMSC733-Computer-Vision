@@ -165,7 +165,7 @@ def ReadLabels(LabelsPathTest, LabelsPathPred):
         
     return LabelTest, LabelPred
 
-def ConfusionMatrix(LabelsTrue, LabelsPred):
+def ConfusionMatrix(LabelsTrue, LabelsPred, num_classes):
     """
     LabelsTrue - True labels
     LabelsPred - Predicted labels
@@ -185,6 +185,17 @@ def ConfusionMatrix(LabelsTrue, LabelsPred):
 
     print('Accuracy: ' + str(Accuracy(LabelsPred, LabelsTrue)), '%')
 
+    plt.matshow(cm)
+
+    # Make various adjustments to the plot.
+    plt.colorbar()
+    tick_marks = np.arange(num_classes)
+    plt.xticks(tick_marks, range(num_classes))
+    plt.yticks(tick_marks, range(num_classes))
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+    plt.show()
+
         
 def main():
     """
@@ -199,6 +210,7 @@ def main():
     Parser.add_argument('--ModelPath', dest='ModelPath', default='/home/pratique/Downloads/cmsc733/Homework0/116353601_hw0/Phase2/Checkpoints/24model.ckpt', help='Path to load latest model from, Default:ModelPath')
     Parser.add_argument('--BasePath', dest='BasePath', default='/home/pratique/Downloads/cmsc733/Homework0/116353601_hw0/Phase2/CIFAR10/Test/', help='Path to load images from, Default:BasePath')
     Parser.add_argument('--LabelsPath', dest='LabelsPath', default='./TxtFiles/LabelsTest.txt', help='Path of labels file, Default:./TxtFiles/LabelsTest.txt')
+    num_classes = 10;
     Args = Parser.parse_args()
     ModelPath = Args.ModelPath
     BasePath = Args.BasePath
@@ -217,7 +229,7 @@ def main():
     # print('\n')
     # Plot Confusion Matrix
     LabelsTrue, LabelsPred = ReadLabels(LabelsPath, LabelsPathPred)
-    ConfusionMatrix(LabelsTrue, LabelsPred)
+    ConfusionMatrix(LabelsTrue, LabelsPred, num_classes)
      
 if __name__ == '__main__':
     main()

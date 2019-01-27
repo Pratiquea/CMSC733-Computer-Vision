@@ -42,8 +42,51 @@ from tqdm import tqdm
 # Don't generate pyc codes
 sys.dont_write_bytecode = True
 
+
+def pre_process_image(image, training, ImageSize):
+    # This function takes a single image as input,
+    # and a boolean whether to build the training or testing graph.
     
-def GenerateBatch(BasePath, DirNamesTrain, TrainLabels, ImageSize, MiniBatchSize):
+    if training:
+        # For training, add the following to the TensorFlow graph.
+        img_size_cropped = ImageSize[0]
+        num_channels = ImageSize[2]
+        # Randomly crop the input image.
+        image = tf.random_crop(image, size=[img_size_cropped, img_size_cropped, num_channels])
+
+        # Randomly flip the image horizontally.
+        image = tf.image.random_flip_left_right(image)
+        
+        # Randomly adjust hue, contrast and saturation.
+        image = tf.image.random_hue(image, max_delta=0.05)
+        image = tf.image.random_contrast(image, lower=0.3, upper=1.0)
+        image = tf.image.random_brightness(image, max_delta=0.2)
+        image = tf.image.random_saturation(image, lower=0.0, upper=2.0)
+        image=(image-np.mean(image))/255
+
+        # Limit the image pixels between [0, 1] in case of overflow.
+        image = tf.minimum(image, 1.0)
+        image = tf.maximum(image, 0.0)
+    else:
+        # For training, add the following to the TensorFlow graph.
+
+        # Crop the input image around the centre so it is the same
+        # size as images that are randomly cropped during training.
+        image = tf.image.resize_image_with_crop_or_pad(image,
+                                                       target_height=img_size_cropped,
+                                                       target_width=img_size_cropped)
+        image=(image-np.mean(image))/255
+
+    return image
+
+def pre_process(ImgPH, training, ImageSize):
+    # Use TensorFlow to loop over all the input images and call
+    # the function above which takes a single image as input.
+    ImgPH = tf.map_fn(lambda image: pre_process_image(image, training, ImageSize), ImgPH)
+
+    return ImgPH
+    
+def GenerateBatch(BasePath, DirNamesTrain, TrainLabels, ImageSize, MiniBatchSize,ImgPH):
     """
     Inputs: 
     BasePath - Path to CIFAR10 folder without "/" at the end
@@ -71,6 +114,8 @@ def GenerateBatch(BasePath, DirNamesTrain, TrainLabels, ImageSize, MiniBatchSize
         ##########################################################################
         # Add any standardization or cropping/resizing if used in Training here!
         ##########################################################################
+        # I1 = pre_process(ImgPH=ImgPH, training=True, ImageSize = ImageSize)
+
         I1S=(I1-np.mean(I1))/255
         Label = convertToOneHot(TrainLabels[RandIdx], 10)
 
@@ -172,7 +217,7 @@ def TrainOperation(ImgPH, LabelPH, DirNamesTrain, TrainLabels, NumTrainSamples, 
         for Epochs in tqdm(range(StartEpoch, NumEpochs)):
             NumIterationsPerEpoch = int(NumTrainSamples/MiniBatchSize/DivTrain)
             for PerEpochCounter in tqdm(range(NumIterationsPerEpoch)):
-                I1Batch, LabelBatch = GenerateBatch(BasePath, DirNamesTrain, TrainLabels, ImageSize, MiniBatchSize)
+                I1Batch, LabelBatch = GenerateBatch(BasePath, DirNamesTrain, TrainLabels, ImageSize, MiniBatchSize,ImgPH)
                 FeedDict = {ImgPH: I1Batch, LabelPH: LabelBatch}
                 _, LossThisBatch, Summary = sess.run([Optimizer, loss, MergedSummaryOP], feed_dict=FeedDict)
                 
@@ -207,7 +252,7 @@ def main():
     Parser.add_argument('--CheckPointPath', default='../Checkpoints/', help='Path to save Checkpoints, Default: ../Checkpoints/')
     Parser.add_argument('--NumEpochs', type=int, default=25, help='Number of Epochs to Train for, Default:50')
     Parser.add_argument('--DivTrain', type=int, default=1, help='Factor to reduce Train data by per epoch, Default:1')
-    Parser.add_argument('--MiniBatchSize', type=int, default=512, help='Size of the MiniBatch to use, Default:1')
+    Parser.add_argument('--MiniBatchSize', type=int, default=256, help='Size of the MiniBatch to use, Default:1')
     Parser.add_argument('--LoadCheckPoint', type=int, default=0, help='Load Model from latest Checkpoint from CheckPointsPath?, Default:0')
     Parser.add_argument('--LogsPath', default='Logs/', help='Path to save Logs for Tensorboard, Default=Logs/')
 

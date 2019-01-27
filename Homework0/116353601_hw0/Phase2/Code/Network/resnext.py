@@ -81,6 +81,9 @@ def MY_RESNET(Img, ImageSize, MiniBatchSize):
 
 def MY_ResneXt():
 	
+	
+	
+
 	net = tf.contrib.layers.flatten(net)
 
     net = tf.layers.dense(inputs=net, name='layer_fc1',

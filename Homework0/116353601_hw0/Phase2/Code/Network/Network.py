@@ -107,8 +107,10 @@ def create_single_resnet_block(net, num_filters = None, kernel_size = None, prev
         original_block = conv_layer_without_relu(net, num_filters=num_filters, kernel_size=kernel_size, strides=1)
 
     if downsample:
-        original_block = conv_layer_without_relu(net, num_filters=num_filters, kernel_size=kernel_size, strides=2)
-        net = conv_layer_with_relu(net, num_filters=num_filters, kernel_size=kernel_size, strides=2)
+        original_block = tf.layers.max_pooling2d(inputs=original_block, pool_size=2, strides=2)
+        net = tf.layers.max_pooling2d(inputs=net, pool_size=2, strides=2)
+        # original_block = conv_layer_without_relu(original_block, num_filters=num_filters, kernel_size=kernel_size, strides=2)
+        # net = conv_layer_with_relu(net, num_filters=num_filters, kernel_size=kernel_size, strides=2)
     else:
         # original_block = conv_layer_with_relu(original_block, num_filters=num_filters, kernel_size=kernel_size, strides=1)
         net = conv_layer_with_relu(net, num_filters=num_filters, kernel_size=kernel_size, strides=1)
@@ -136,10 +138,10 @@ def MY_RESNET(Img, ImageSize, MiniBatchSize):
     num_classes = 10;
 
     net = Img
-    net = conv_layer_with_relu(net=net, num_filters = 64, kernel_size = 3, strides = 1)
-    net = n_resnet_blocks(2, net=net, prev_filter = 64, num_filters = 64, kernel_size = 3)
+    net = conv_layer_with_relu(net=net, num_filters = 32, kernel_size = 3, strides = 1)
+    net = n_resnet_blocks(5, net=net, prev_filter = 32, num_filters = 32, kernel_size = 3)
+    net = n_resnet_blocks(3, net=net, prev_filter = 32, num_filters = 64, kernel_size = 3, downsample = True)
     net = n_resnet_blocks(2, net=net, prev_filter = 64, num_filters = 128, kernel_size = 3, downsample = True)
-    net = n_resnet_blocks(3, net=net, prev_filter = 128, num_filters = 256, kernel_size = 3, downsample = True)
 
     net1 = tf.contrib.layers.flatten(net)
 
