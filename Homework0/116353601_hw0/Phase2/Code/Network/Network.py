@@ -15,6 +15,7 @@ University of Maryland, College Park
 """
 
 import tensorflow as tf
+from tflearn.layers.conv import global_avg_pool
 import sys
 import numpy as np
 # Don't generate pyc codes
@@ -100,6 +101,10 @@ def conv_layer_without_relu(net, num_filters = None, kernel_size = None, strides
 
     return net
 
+
+
+
+
 def create_single_resnet_block(net, num_filters = None, kernel_size = None, prev_filter = None, downsample = False):
     if(prev_filter == num_filters):
         original_block = net
@@ -154,6 +159,115 @@ def MY_RESNET(Img, ImageSize, MiniBatchSize):
     prLogits = net3
     prSoftMax = tf.nn.softmax(net3)
     return prLogits, prSoftMax
+
+
+
+
+# def transform_layer(net, strides, scope, depth):
+#     with tf.name_scope(scope) :
+#         net = conv_layer_with_relu(net=net, num_filters = depth, kernel_size = [1,1], strides = strides)
+
+#         net = conv_layer_with_relu(net=net, num_filters = depth, kernel_size = [3,3], strides = strides)
+#         return net
+
+
+
+
+
+# def split_layer_and_create_res_blocks(net, strides, layer_name, depth, cardinality):
+#     with tf.name_scope(layer_name) :
+#         layers_split = list()
+#         for i in range(cardinality) :
+#             splits = transform_layer(net=net, strides=strides, scope=layer_name + '_splitN_' + str(i), depth=depth)
+#             layers_split.append(splits)
+
+#         return tf.concat(layers_split, axis=3)
+
+
+# def residual_layer(net, out_dim, layer_num, res_block, depth, cardinality):
+#     for i in range(res_block):
+#         # input_dim = net.get_shape().as_list()[-1]
+#         input_dim = int(np.shape(net)[-1])
+
+#         if input_dim * 2 == out_dim:
+#             flag = True
+#             strides = 2
+#             channel = input_dim // 2
+#         else:
+#             flag = False
+#             strides = 1
+#         x = split_layer_and_create_res_blocks(net, strides=strides, layer_name='split_layer_'+layer_num+'_'+str(i), depth=depth, cardinality=cardinality)
+#         x = conv_layer_without_relu(net, num_filters = out_dim, kernel_size = 1, strides = 1)
+
+#         if flag is True :
+#             pad_input_x = tf.layers.average_pooling2d(inputs=net, pool_size=[2,2], strides=2, padding='SAME')            
+#             pad_input_x = tf.pad(pad_input_x, [[0, 0], [0, 0], [0, 0], [channel, channel]]) # [?, height, width, channel]
+#         else :
+#             pad_input_x = net
+
+#         net = tf.nn.relu(x + pad_input_x)
+
+#     return net 
+
+
+def single_res_block(net, strides, kernel_size, depth):
+    net = conv_layer_with_relu(net=net, num_filters = depth, kernel_size = [1,1], strides = strides)
+
+    net = conv_layer_with_relu(net=net, num_filters = depth, kernel_size = kernel_size, strides = 1)
+    return net
+
+def parallel_resnet_blocks(net, strides, kernel_size, depth, cardinality):
+    split_net = net
+    parallel_res_block_list = list()
+    for each_block in range(cardinality):
+        parallel_res_block_list.append(single_res_block(net=split_net, strides=strides, kernel_size=kernel_size, depth=depth))
+    concated_parallel_res_blocks=tf.concat(parallel_res_block_list, axis=3)
+    return concated_parallel_res_blocks
+
+def transition_layer(net, out_dim):
+    strides = 1
+    transition_layer = conv_layer_without_relu(net=net, num_filters = out_dim, kernel_size = 1,strides=strides)
+    return transition_layer
+
+def single_resneXt_block(net, strides, kernel_size, depth, cardinality):
+    original_block = net
+    out_dim = int(np.shape(original_block)[-1])
+    parallel_resnet_blocks_out=parallel_resnet_blocks(net=net, strides=strides, kernel_size=kernel_size, depth=depth, cardinality=cardinality)
+    out_transition_layer = transition_layer(net=parallel_resnet_blocks_out, out_dim=out_dim)
+    final_output = tf.nn.relu(original_block + out_transition_layer)
+    return final_output
+
+
+def MY_ResneXt(Img, ImageSize, MiniBatchSize):
+    
+    num_classes = 10
+    depth = 8
+    cardinality = 32
+    blocks = 3
+
+
+    net = Img
+    net = conv_layer_with_relu(net=net, num_filters = 32, kernel_size = 3, strides = 1)
+        
+    net = single_resneXt_block(net=net, strides=1, kernel_size = 3, depth=depth, cardinality=cardinality)
+    net = conv_layer_with_relu(net=net, num_filters = 128, kernel_size = 1, strides=2)
+    cardinality = 16
+    net = single_resneXt_block(net=net, strides=1, kernel_size = 3, depth=depth, cardinality=cardinality)
+    
+    net = global_avg_pool(net, name='Global_avg_pooling');
+
+    net = tf.contrib.layers.flatten(net)
+
+    # net = tf.layers.dense(inputs=net, name='layer_fc1',
+    #                   units=128, activation=tf.nn.relu)
+    #Contruct Fully-connected layer
+    net = tf.layers.dense(inputs=net, name='layer_fc_out',
+                      units=num_classes, activation=None)
+
+    prLogits = net
+    prSoftMax = tf.nn.softmax(net)
+    return prLogits, prSoftMax
+
 
 
 

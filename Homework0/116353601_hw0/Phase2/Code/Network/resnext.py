@@ -79,10 +79,15 @@ def MY_RESNET(Img, ImageSize, MiniBatchSize):
 
 #################################
 
-def MY_ResneXt():
+def MY_ResneXt(Img, ImageSize, MiniBatchSize):
+    
+    num_classes = 10;
+
+    net = Img
+    net = conv_layer_with_relu(net=net, num_filters = 64, kernel_size = 3, strides = 1)
 	
 	
-	
+
 
 	net = tf.contrib.layers.flatten(net)
 
