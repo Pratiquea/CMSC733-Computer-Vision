@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import cv2
 import scipy
 import random
+from sklearn.cluster import KMeans
+
 
 def gabor_fn(sigma, theta, Lambda, psi, gamma):
     sigma_x = sigma
@@ -203,7 +205,7 @@ def half_disk_bank(radius_list,orient):
 
 
 def gabor_filter_list(num_filters):
-	# gabor_filter = list()
+	gabor_filter = list()
 	# sigma_used_list = list()
 	# theta_used_list = list()
 	# Lambda_used_list = list()
@@ -229,18 +231,165 @@ def filter_bank():
 	return DoG_filters, LM_filters, gabor_filters
 
 
-
 def texton_tensor(Img_gray):
-    N_dim_tensor_dog = Img_gray
-    N_dim_tensor_lm = Img_gray
-    N_dim_tensor_gabor = Img_gray
+    N_dim_tensor = Img_gray
+    
     DoG_filters, LM_filters, gabor_filters = filter_bank()
     
     for each in range(len(DoG_filters)):
-        # kernel_op = cv2.filter2D(Img_gray,-1,filter_bank[:,:,each])
         kernel_op = cv2.filter2D(Img_gray,-1,DoG_filters[each])
-        N_dim_tensor_dog = np.dstack((N_dim_tensor_dog,kernel_op))
-    return N_dim_tensor_dog
+        N_dim_tensor = np.dstack((N_dim_tensor,kernel_op))
+    
+    for each in range(len(LM_filters)):
+        kernel_op = cv2.filter2D(Img_gray,-1,LM_filters[each])
+        N_dim_tensor = np.dstack((N_dim_tensor,kernel_op))
+    
+    
+    for each in range(len(gabor_filters)):
+        kernel_op = cv2.filter2D(Img_gray,-1,gabor_filters[each])
+        N_dim_tensor = np.dstack((N_dim_tensor,kernel_op))
+    
+    N_dim_tensor = N_dim_tensor[:,:,1:]
+    return N_dim_tensor
+
+def texton_kmeans(img):
+	img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+	N_dim_tensor_dog = texton_tensor(img_gray)
+	p,q,r = np.shape(N_dim_tensor_dog)
+	inp = np.reshape(N_dim_tensor_dog,((p*q),r))
+	kmeans = sklearn.cluster.KMeans(n_clusters = 64, random_state = 2)
+	kmeans.fit(inp)
+	labels = kmeans.predict(inp)
+	l = np.reshape(labels,(p,q))
+	# plt.imshow(l)
+	# plt.show()
+	return l
+
+
+def brightness_kmeans(img):
+	img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+	p,q= np.shape(img_gray)
+	inp = np.reshape(img_gray,((p*q),1))
+	kmeans = sklearn.cluster.KMeans(n_clusters = 16, random_state = 2)
+	kmeans.fit(inp)
+	labels = kmeans.predict(inp)
+	l = np.reshape(labels,(p,q))
+	# plt.imshow(l,cmap = 'binary')
+	# plt.show()
+	return l
+
+
+def color_kmeans(img):
+	img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV);
+	p,q,r = np.shape(img)
+	inp = np.reshape(img,((p*q),r))
+	kmeans = sklearn.cluster.KMeans(n_clusters = 16, random_state = 2)
+	kmeans.fit(inp)
+	labels = kmeans.predict(inp)
+	l = np.reshape(labels,(p,q))
+	# plt.imshow(l)
+	# plt.show()
+return l
+
+
+def calculate_chi_square(img,num_bins,left_mask,right_mask):
+    chi_sqr_dist = img*0
+    for i in range(num_bins):
+        tmp = img       #1 where img is in bin i and 0 elsewhere
+        mask = np.ma.masked_where(tmp==i , tmp)
+        mask = mask.astype(np.int)
+        g_i = cv2.filter2D(mask,-1,left_mask)	#convolve tmp with left_mask
+        h_i = cv2.filter2D(mask,-1,right_mask)	#convolve tmp with right_mask
+        term = (0.5)*(np.power((g_i-h_i),2)/(g_i+h_i))
+        chi_sqr_dist = chi_sqr_dist + term
+    return chi_sqr_dist
+
+
+# def calculate_Tg(img,num_bins,half_disk_filter_bank):
+#     img_chi_tensor=img
+#     texton_kmean = texton_kmeans(img)
+#     for i in range(len(half_disk_filter_bank)/2):
+#         left_mask = half_disk_filter_bank[i]
+#         right_mask = half_disk_filter_bank[i+1]
+#         chi_sqr_dist = calculate_chi_square(img=texton_kmean,num_bins=num_bins,left_mask=left_mask,right_mask=right_mask)
+#         img_chi_tensor = np.dstack((img_chi_tensor,chi_sqr_dist))
+#     Tg = img_chi_tensor[:,:,1:]
+#     return Tg
+
+
+# def calculate_Bg(img,num_bins,half_disk_filter_bank):
+#     img_chi_tensor=img
+#     brightness_kmean = brightness_kmeans(img)
+#     for i in range(len(half_disk_filter_bank)/2):
+#         left_mask = half_disk_filter_bank[i]
+#         right_mask = half_disk_filter_bank[i+1]
+#         chi_sqr_dist = calculate_chi_square(img=brightness_kmean,num_bins=num_bins,left_mask=left_mask,right_mask=right_mask)
+#         img_chi_tensor = np.dstack((img_chi_tensor,chi_sqr_dist))
+#     Bg = img_chi_tensor[:,:,1:]
+#     return Bg
+
+
+# def calculate_Cg(img,num_bins,half_disk_filter_bank):
+#     img_chi_tensor=img
+#     color_kmean = color_kmeans(img)
+#     for i in range(len(half_disk_filter_bank)/2):
+#         left_mask = half_disk_filter_bank[i]
+#         right_mask = half_disk_filter_bank[i+1]
+#         chi_sqr_dist = calculate_chi_square(img=color_kmean,num_bins=num_bins,left_mask=left_mask,right_mask=right_mask)
+#         img_chi_tensor = np.dstack((img_chi_tensor,chi_sqr_dist))
+#     Cg = img_chi_tensor[:,:,1:]
+#     return Cg
+
+
+
+
+def calculate_Tg(img,num_bins,half_disk_filter_bank):
+    img_chi_tensor=img
+    texton_kmean = texton_kmeans(img)
+    for i in range(len(half_disk_filter_bank)/2):
+        left_mask = half_disk_filter_bank[i]
+        right_mask = half_disk_filter_bank[i+1]
+        chi_sqr_dist = calculate_chi_square(img=texton_kmean,num_bins=num_bins,left_mask=left_mask,right_mask=right_mask)
+        img_chi_tensor = np.dstack((img_chi_tensor,chi_sqr_dist))
+    img_chi_tensor[:,:,1:]
+    return img_chi_tensor
+
+def calculate_Bg(img,num_bins,half_disk_filter_bank):
+    img_chi_tensor=img
+    brightness_kmean = brightness_kmeans(img)
+    for i in range(len(half_disk_filter_bank)/2):
+        left_mask = half_disk_filter_bank[i]
+        right_mask = half_disk_filter_bank[i+1]
+        chi_sqr_dist = calculate_chi_square(img=brightness_kmean,num_bins=num_bins,left_mask=left_mask,right_mask=right_mask)
+        img_chi_tensor = np.dstack((img_chi_tensor,chi_sqr_dist))
+    Bg = img_chi_tensor[:,:,1:]
+    return Bg
+
+
+def calculate_Cg(img,num_bins,half_disk_filter_bank):
+    img_chi_tensor=img
+    color_kmean = color_kmeans(img)
+    for i in range(len(half_disk_filter_bank)/2):
+        left_mask = half_disk_filter_bank[i]
+        right_mask = half_disk_filter_bank[i+1]
+        chi_sqr_dist = calculate_chi_square(img=color_kmean,num_bins=num_bins,left_mask=left_mask,right_mask=right_mask)
+        img_chi_tensor = np.dstack((img_chi_tensor,chi_sqr_dist))
+    Cg = img_chi_tensor[:,:,1:]
+    return Cg
+
+
+# def texton_tensor(Img_gray):
+#     N_dim_tensor_dog = Img_gray
+#     N_dim_tensor_lm = Img_gray
+#     N_dim_tensor_gabor = Img_gray
+#     DoG_filters, LM_filters, gabor_filters = filter_bank()
+    
+#     for each in range(len(DoG_filters)):
+#         # kernel_op = cv2.filter2D(Img_gray,-1,filter_bank[:,:,each])
+#         kernel_op = cv2.filter2D(Img_gray,-1,DoG_filters[each])
+#         N_dim_tensor_dog = np.dstack((N_dim_tensor_dog,kernel_op))
+#     return N_dim_tensor_dog[:,:,1:]
+
 
 
 
@@ -328,3 +477,23 @@ if __name__ == '__main__':
 
 
 
+# radius_list = [7,20,35]
+# orient = 4
+# half_disk = half_disk_bank(radius_list,orient)
+
+# img = cv2.imread('/home/pratique/Downloads/cmsc733/Homework0/116353601_hw0/Phase1/BSDS500/Images/1.jpg')
+# num_bins = 64
+# half_disk_filter_bank = half_disk
+
+# Tg = calculate_Tg(img,num_bins,half_disk_filter_bank)
+# Bg = calculate_Bg(img,num_bins,half_disk_filter_bank)
+# Cg = calculate_Cg(img,num_bins,half_disk_filter_bank)
+
+# temp = (Tg+Bg+Cg)/3
+# mean = np.mean(temp,axis =2)
+# cannyBaseline = cv2.imread('/home/pratique/Downloads/cmsc733/Homework0/116353601_hw0/Phase1/BSDS500/CannyBaseline/1.png',0)
+# sobelBaseline = cv2.imread('/home/pratique/Downloads/cmsc733/Homework0/116353601_hw0/Phase1/BSDS500/SobelBaseline/1.png',0)
+# final = np.multiply(mean, (0.6*cannyBaseline+0.4*sobelBaseline))
+
+# plt.imshow(final) # ,cmap='binary')
+# plt.show()

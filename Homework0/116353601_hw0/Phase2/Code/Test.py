@@ -207,7 +207,7 @@ def main():
 
     # Parse Command Line arguments
     Parser = argparse.ArgumentParser()
-    Parser.add_argument('--ModelPath', dest='ModelPath', default='/home/pratique/Downloads/cmsc733/Homework0/116353601_hw0/Phase2/Checkpoints/49model.ckpt', help='Path to load latest model from, Default:ModelPath')
+    Parser.add_argument('--ModelPath', dest='ModelPath', default='/home/pratique/Downloads/cmsc733/Homework0/116353601_hw0/Phase2/Checkpoints/99model.ckpt', help='Path to load latest model from, Default:ModelPath')
     Parser.add_argument('--BasePath', dest='BasePath', default='/home/pratique/Downloads/cmsc733/Homework0/116353601_hw0/Phase2/CIFAR10/Test/', help='Path to load images from, Default:BasePath')
     Parser.add_argument('--LabelsPath', dest='LabelsPath', default='./TxtFiles/LabelsTest.txt', help='Path of labels file, Default:./TxtFiles/LabelsTest.txt')
     num_classes = 10;
