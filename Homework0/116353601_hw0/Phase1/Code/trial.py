@@ -180,15 +180,22 @@ def single_half_disk(radius):
 
 def half_disk_bank(radius_list,orient):
     orients=np.linspace(0,360,orient)
-   	half_disk_bank_op = list()
+    orients = orients[:-1]
+    half_disk_bank_op = list()
     for each_rad in radius_list:
-		one_half_disk=single_half_disk(each_rad)
+        one_half_disk=single_half_disk(each_rad)
         for eachOrient in orients:
             image=skimage.transform.rotate(one_half_disk,eachOrient,cval=1)
+            image_rotated=skimage.transform.rotate(one_half_disk,eachOrient+180,cval=1)
+            image = np.round(image)
+            image_rotated = np.round(image_rotated)
+            half_disk_bank_op.append(image_rotated)
             half_disk_bank_op.append(image)
+            
     return half_disk_bank_op
- #    radius_list = [7,20,35]
-	# orient = 4
+
+	# radius_list = [7,15,23]
+	# orient = 8
 	# half_disk = half_disk_bank(radius_list,orient)
 	# for each in half_disk:
 	#     plt.imshow(each,cmap='binary')
