@@ -13,7 +13,7 @@ In this homework, a simplified version of [probability of boundary detection alg
 
 <img src="Image_Classification/Phase1/BSDS500/Images/8.jpg" align="center" alt="Your image title" width="400"/> <img src="Image_Classification/Phase1/Code/8/PbLite_8canny=0.1.png" align="center" alt="Your image title" width="400"/>
 
-The implementation detials and results of the homework can be found [here](Image_Classification/Abhinav_Modi_Hw0.pdf) and instructions on how to run the code are given [here](https://github.com/abhi1625/CMSC-733/tree/master/Abhi1625_hw0).
+The implementation detials and results of the homework can be found [here](Image_Classification/Abhinav_Modi_Hw0.pdf) and instructions on how to run the code are given [here](https://github.com/Pratiquea/CMSC733-Computer-Vision/tree/master/Image_Classification).
 
 #### Phase 2: Deep Dive into Deep Learning
 For phase 2 of this homework, multiple neural network architectures were implemented. Various criterion like number of parameters, train and test set accuracies were compared for each network architecture and detailed analysis of why one architecture works better than another one was provided. The details about implementation and the results are provided in the submitted [report](https://github.com/abhi1625/CMSC-733/blob/master/Abhi1625_hw0/Abhinav_Modi_Hw0.pdf).
@@ -28,7 +28,7 @@ Homography between 2 image frames is defined as the projective transformation be
 <!-- img src="Abhi1625_p1/Draft/mypano5.png" align="right" alt="Pano4" height="300" width="900"/ -->
 <img src="Abhi1625_p1/Draft/mypano3.png" align="center" alt="Pano3" height="300" width="900"/>
 
-The implementation details and results can be found [here](https://cmsc733.github.io/assets/2019/p1/results/pdf/kmadhira_p1-compressed.pdf) and the code is available [here](https://github.com/abhi1625/CMSC-733/tree/master/Abhi1625_p1)
+The implementation details and results can be found [here](https://cmsc733.github.io/assets/2019/p1/results/pdf/kmadhira_p1-compressed.pdf) and the code is available [here](https://github.com/Pratiquea/CMSC733-Computer-Vision/tree/master/AutoPano)
 
 ## [P2 : FaceSwap](https://github.com/Pratiquea/CMSC733-Computer-Vision/tree/master/Face_Swap)
 The aim of this project was to implement an end-to-end pipeline to swap faces in a video just like [Snapchat’s face swap filter](https://www.snapchat.com/) or this [face swap website](http://faceswaplive.com/). It’s a fairly complicated procedure and variants of the approach we've implement have been used in many movies. 
