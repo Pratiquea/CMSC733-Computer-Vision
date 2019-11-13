@@ -38,7 +38,7 @@ Note that, you need to be aware of ethical issues while replacing faces. Similar
 - Using [Thin Plate Splines](https://en.wikipedia.org/wiki/Thin_plate_spline)
 - Using a deep learning approach: Joint 3D face reconstruction and dense alignment with position map regression network ([link](https://arxiv.org/abs/1803.07835))
 
-The details of the implementation and results are available [here](https://github.com/abhi1625/CMSC-733/blob/master/Abhi1625_p2/CMSC733_project2_Faceswap.pdf) and the code is available [here](https://github.com/abhi1625/CMSC-733/tree/master/Abhi1625_p2).
+The details of the implementation and results are available [here](https://github.com/Pratiquea/CMSC733-Computer-Vision/tree/master/Face_Swap/CMSC733_project2_Faceswap.pdf) and the code is available [here](https://github.com/Pratiquea/CMSC733-Computer-Vision/tree/master/Face_Swap).
 
 The comparison videos for the three pipelines on one of the data sets can be seen here:
  - [![Thin Plate Splines](Face_Swap/Data/Capture.PNG)](Face_Swap/Data/Data1OutputTPS.mp4)
