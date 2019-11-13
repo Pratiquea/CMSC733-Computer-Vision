@@ -1,7 +1,7 @@
 ## Project 2: Face Swap
 The description and steps used in each section for swapping faces is briefed in the `CMSC733_project2_Faceswap.pdf`. The swapping is tested for 3 different transforming techniques: Delaunay Triangulation, Thin Plate Splines and a deep learning approach using PR Net(Position map regression Network).
 ### Face Swap using Delaunay Triangulation:
-- From the terminal cd into the folder `Abhi1625_p2/Code/`
+- From the terminal cd into the folder `Face_Swap/Code/`
 - Run the file Wrapper.py with the following command line arguements:
 ```
 python Wrapper.py --video=Test1.mp4 --swap_img=Rambo.jpg --mode=deln
@@ -9,7 +9,8 @@ python Wrapper.py --video=Test1.mp4 --swap_img=Rambo.jpg --mode=deln
 This will run the code for delaunay triangulation to swap the face in `Test1.mp4` with the one in `Rambo.jpg`. 
 
 ### Face Swap using Thin Plate Splines:
-- From the terminal cd into the folder `Abhi1625_p2/Code/`
+- From the terminal cd into the folder `
+Face_Swap/Code/`
 - Run the file Wrapper.py with the following command line arguements:
 ```
 python Wrapper.py --video=Test1.mp4 --swap_img=Rambo.jpg --mode=tps
