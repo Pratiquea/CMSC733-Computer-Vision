@@ -41,7 +41,7 @@ Note that, you need to be aware of ethical issues while replacing faces. Similar
 The details of the implementation and results are available [here](https://github.com/abhi1625/CMSC-733/blob/master/Abhi1625_p2/CMSC733_project2_Faceswap.pdf) and the code is available [here](https://github.com/abhi1625/CMSC-733/tree/master/Abhi1625_p2).
 
 The comparison videos for the three pipelines on one of the data sets can be seen here:
- - [![Thin Plate Splines](Abhi1625_p2/Data/Capture.PNG)](Abhi1625_p2/Data/Data1OutputTPS.mp4)
- - [![Triangulation](Abhi1625_p2/Data/Capture.PNG)](Abhi1625_p2/Data/Data1OutputTri.mp4)
- - [![PRNet](Abhi1625_p2/Data/Capture.PNG)](Abhi1625_p2/Data/Data1OutputPRNet.mp4)
+ - [![Thin Plate Splines](Face_Swap/Data/Capture.PNG)](Face_Swap/Data/Data1OutputTPS.mp4)
+ - [![Triangulation](Face_Swap/Data/Capture.PNG)](Face_Swap/Data/Data1OutputTri.mp4)
+ - [![PRNet](Face_Swap/Data/Capture.PNG)](Face_Swap/Data/Data1OutputPRNet.mp4)
  
