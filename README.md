@@ -2,7 +2,7 @@
 Projects for the course CMSC733 - Classical and Deep Learning Approaches for
 Geometric Computer Vision
 
-## [HW0: Alohamora!](https://github.com/abhi1625/CMSC-733/tree/master/Abhi1625_hw0)
+## [HW0: Alohamora!](https://github.com/Pratiquea/CMSC733-Computer-Vision/tree/master/Image_Classification)
 This was an introductory project for the course and was divided into two phases:
 
 #### Phase 1: Shake My Boundary
@@ -21,7 +21,7 @@ For phase 2 of this homework, multiple neural network architectures were impleme
 ## [HW1: AutoCalib](https://github.com/abhi1625/CMSC-733/tree/master/Abhi1625_hw1)
 Estimating parameters of the camera like the focal length, distortion coefficients and principle point is called **Camera Calibration**. It is one of the most time consuming and important part of any computer vision research involving 3D geometry. An automatic way to perform efficient and robust camera calibration was presented by Zhengyou Zhang of Microsoft in this [paper](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/tr98-71.pdf) and is regarded as one of the hallmark papers in camera calibration. A pipeline based on Zhang's algorithm, which minimizes reprojection error to estimate the intrinsic camera matrix and the distortion coefficients, was implemented as a part of the project. The implementation details and results can be found [here](https://github.com/abhi1625/CMSC-733/blob/master/Abhi1625_hw1/CMSC733_project2_Faceswap.pdf) and the code is available [here](https://github.com/abhi1625/CMSC-733/tree/master/Abhi1625_hw1).
 
-## [P1 : My AutoPano](https://github.com/abhi1625/CMSC-733/tree/master/Abhi1625_p1)
+## [P1 : My AutoPano](https://github.com/Pratiquea/CMSC733-Computer-Vision/tree/master/AutoPano)
 Homography between 2 image frames is defined as the projective transformation between these frames and is one of the very key concepts in Computer Vision. In this project we used Homography to warp multiple images and stitch a panorama using three different techniques - Traditional approach using feature matching and RANSAC, Supervised approach to predict a 4 point parametrization of Homography between two images and an Unsupervised approach to predict Homography without the presence of a ground truth. Some of the output panoramas generated with the traditional approach are shown below:
 <img src="Abhi1625_p1/Draft/mypano.png" align="center" alt="Pano1" height="300"/>
 <img src="Abhi1625_p1/Draft/mypano2.png" align="center" alt="Pano2" height="300" width="900"/> 
@@ -30,7 +30,7 @@ Homography between 2 image frames is defined as the projective transformation be
 
 The implementation details and results can be found [here](https://cmsc733.github.io/assets/2019/p1/results/pdf/kmadhira_p1-compressed.pdf) and the code is available [here](https://github.com/abhi1625/CMSC-733/tree/master/Abhi1625_p1)
 
-## [P2 : FaceSwap](https://github.com/abhi1625/CMSC-733/tree/master/Abhi1625_p2)
+## [P2 : FaceSwap](https://github.com/Pratiquea/CMSC733-Computer-Vision/tree/master/Face_Swap)
 The aim of this project was to implement an end-to-end pipeline to swap faces in a video just like [Snapchat’s face swap filter](https://www.snapchat.com/) or this [face swap website](http://faceswaplive.com/). It’s a fairly complicated procedure and variants of the approach we've implement have been used in many movies. 
 
 Note that, you need to be aware of ethical issues while replacing faces. Similar methods have been used by people for the creation of fake videos of celibrities called Deep Fakes. Three pipelines were implemented:
