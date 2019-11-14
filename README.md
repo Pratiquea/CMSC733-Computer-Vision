@@ -1,4 +1,4 @@
-# CMSC-733
+# CMSC-733 Computer  Vision
 Projects for the course CMSC733 - Classical and Deep Learning Approaches for
 Geometric Computer Vision
 
